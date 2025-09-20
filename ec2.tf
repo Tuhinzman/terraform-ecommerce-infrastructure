@@ -96,9 +96,9 @@ resource "aws_security_group" "ecommerce_frontend" {
 # User Data Script for Software Installation
 locals {
   user_data_script = var.create_ecommerce_server ? base64encode(templatefile("${path.module}/user-data.sh", {
-    project_name        = var.project_name
-    environment         = var.environment
-    terraform_version   = "1.6.6"
+    project_name      = var.project_name
+    environment       = var.environment
+    terraform_version = "1.6.6"
   })) : ""
 }
 
@@ -106,13 +106,13 @@ locals {
 resource "aws_instance" "ecommerce_frontend" {
   count = var.create_ecommerce_server ? 1 : 0
 
-  ami                     = var.ecommerce_ami_id
-  instance_type           = var.ecommerce_instance_type
-  key_name                = var.key_pair_name
-  subnet_id               = var.ecommerce_subnet_type == "public" ? aws_subnet.public[0].id : aws_subnet.private[0].id
-  vpc_security_group_ids  = [aws_security_group.ecommerce_frontend[0].id]
-  user_data               = local.user_data_script
-  monitoring              = var.enable_detailed_monitoring
+  ami                    = var.ecommerce_ami_id
+  instance_type          = var.ecommerce_instance_type
+  key_name               = var.key_pair_name
+  subnet_id              = var.ecommerce_subnet_type == "public" ? aws_subnet.public[0].id : aws_subnet.private[0].id
+  vpc_security_group_ids = [aws_security_group.ecommerce_frontend[0].id]
+  user_data              = local.user_data_script
+  monitoring             = var.enable_detailed_monitoring
 
   # Root volume configuration
   root_block_device {

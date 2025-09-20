@@ -144,6 +144,8 @@ The e-commerce frontend server comes pre-configured with:
 - `kgp` → `kubectl get pods`
 - `kgs` → `kubectl get services`
 - `kgd` → `kubectl get deployments`
+- `dps` → `docker ps`
+- `dpa` → `docker ps -a`
 
 #### Project Structure
 ```
@@ -153,6 +155,14 @@ The e-commerce frontend server comes pre-configured with:
     ├── terraform/    # Infrastructure code
     └── kubernetes/   # Kubernetes manifests
 ```
+
+#### User-Data Script Features
+- **Comprehensive Logging**: All installation steps logged to `/var/log/user-data.log`
+- **Error Handling**: Built-in error checking and status reporting
+- **Template Variables**: Dynamic configuration based on environment
+- **Firewall Configuration**: UFW setup with development ports
+- **CloudWatch Integration**: Automatic monitoring setup
+- **Bash Environment**: Pre-configured aliases and environment variables
 
 ### Environment-Specific Configurations
 
@@ -280,6 +290,74 @@ The configuration provides comprehensive outputs for integration with other reso
 - **Dynamic AZ Selection**: Automatically uses available zones
 - **Flexible Subnetting**: CIDR blocks calculated automatically
 - **Environment Awareness**: Configuration adapts to environment
+
+## 🔧 Troubleshooting
+
+### User-Data Script Issues
+
+If software isn't installed after instance launch:
+
+#### Check User-Data Execution
+```bash
+# Check if user-data script ran
+sudo cloud-init status
+
+# View user-data logs
+sudo tail -f /var/log/user-data.log
+
+# Check cloud-init output
+sudo cat /var/log/cloud-init-output.log
+```
+
+#### Verify Script Completion
+```bash
+# Check if script completed
+ls -la /tmp/user-data-completed
+
+# View the actual user-data script
+sudo cat /var/lib/cloud/instance/user-data.txt
+```
+
+#### Manual Installation (if needed)
+```bash
+# Download and run manual installation script
+curl -o manual-install.sh https://raw.githubusercontent.com/YOUR_USERNAME/terraform-ecommerce-infrastructure/main/scripts/manual-install.sh
+chmod +x manual-install.sh
+./manual-install.sh
+```
+
+### Testing User-Data Script
+
+Before deploying, you can test the user-data script:
+
+```bash
+# Run the test script
+./test-user-data.sh
+
+# Check for syntax errors
+bash -n user-data.sh
+
+# Validate template variables
+grep -n '\${' user-data.sh
+```
+
+### Common Issues
+
+1. **Template Variable Errors**
+   - Ensure `${project_name}`, `${environment}`, `${terraform_version}` are properly used
+   - Check `ec2.tf` passes all required variables to `templatefile()`
+
+2. **Bash Variable Escaping**
+   - Use `$` for bash variables in template: `$(whoami)` instead of `$(whoami)`
+   - Use here-documents with unique EOF markers
+
+3. **Repository Configuration**
+   - APT repository URLs must be properly formatted
+   - GPG keys must be correctly added before repositories
+
+4. **Script Size Limits**
+   - User-data scripts have a 16KB limit
+   - Use external scripts for larger installations
 
 ## 🛠️ Customization
 

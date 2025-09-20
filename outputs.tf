@@ -183,7 +183,7 @@ output "ecommerce_frontend_instance_id" {
 
 output "ecommerce_frontend_public_ip" {
   description = "Public IP address of the e-commerce frontend instance"
-  value       = var.create_ecommerce_server && var.ecommerce_subnet_type == "public" ? (
+  value = var.create_ecommerce_server && var.ecommerce_subnet_type == "public" ? (
     length(aws_eip.ecommerce_frontend) > 0 ? aws_eip.ecommerce_frontend[0].public_ip : aws_instance.ecommerce_frontend[0].public_ip
   ) : null
 }
@@ -232,16 +232,16 @@ output "ecommerce_frontend_ssh_connection" {
 output "ecommerce_frontend_urls" {
   description = "URLs to access the e-commerce frontend application"
   value = var.create_ecommerce_server && var.ecommerce_subnet_type == "public" ? {
-    http_url = format("http://%s", 
+    http_url = format("http://%s",
       length(aws_eip.ecommerce_frontend) > 0 ? aws_eip.ecommerce_frontend[0].public_ip : aws_instance.ecommerce_frontend[0].public_ip
     )
-    https_url = format("https://%s", 
+    https_url = format("https://%s",
       length(aws_eip.ecommerce_frontend) > 0 ? aws_eip.ecommerce_frontend[0].public_ip : aws_instance.ecommerce_frontend[0].public_ip
     )
-    react_dev_url = format("http://%s:3000", 
+    react_dev_url = format("http://%s:3000",
       length(aws_eip.ecommerce_frontend) > 0 ? aws_eip.ecommerce_frontend[0].public_ip : aws_instance.ecommerce_frontend[0].public_ip
     )
-    nextjs_url = format("http://%s:3001", 
+    nextjs_url = format("http://%s:3001",
       length(aws_eip.ecommerce_frontend) > 0 ? aws_eip.ecommerce_frontend[0].public_ip : aws_instance.ecommerce_frontend[0].public_ip
     )
   } : null
