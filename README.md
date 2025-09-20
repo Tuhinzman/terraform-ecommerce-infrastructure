@@ -2,6 +2,15 @@
 
 This repository contains Terraform configuration for AWS infrastructure organized in a modular structure following best practices, including a fully configured e-commerce frontend server.
 
+## 👨‍💻 **Author**
+
+**Tuhin Zaman**  
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?style=flat&logo=linkedin)](https://www.linkedin.com/in/tuhinzaman/)
+
+*Follow for more cloud infrastructure content and DevOps best practices!*
+
+---
+
 ## 📁 File Structure
 
 ```
@@ -453,6 +462,27 @@ After deploying the infrastructure, you can:
 2. Update documentation for any changes
 3. Test in development environment first
 4. Add appropriate outputs for new resources
+
+## 💬 **Connect & Collaborate**
+
+**Tuhin Zaman**  
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?style=flat&logo=linkedin)](https://www.linkedin.com/in/tuhinzaman/)
+
+**📢 Follow for more:**
+- Cloud Infrastructure content
+- DevOps best practices  
+- Terraform tutorials
+- AWS automation tips
+
+**💡 Suggestions Welcome:**
+- Found a better approach? Let me know!
+- Have ideas for improvements? Open an issue!
+- Want to collaborate? Connect on LinkedIn!
+- Questions about the implementation? Feel free to ask!
+
+---
+
+*This project demonstrates production-ready Terraform practices for AWS infrastructure. Star ⭐ the repo if you found it helpful!*
 
 ## 📚 Additional Resources
 
