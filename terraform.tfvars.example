@@ -1,0 +1,88 @@
+# =============================================================================
+# TERRAFORM VARIABLES CONFIGURATION
+# Copy this file to terraform.tfvars and customize the values
+# =============================================================================
+
+# AWS Configuration
+aws_region     = "us-east-1"
+aws_account_id = "642959137314"
+
+# Project Configuration
+project_name         = "devops"
+project_display_name = "DevOps"
+environment          = "dev"
+
+# Network Configuration
+vpc_cidr = "10.0.0.0/16"
+
+# Optional: Specify availability zones (leave empty to use all available)
+# availability_zones = ["us-east-1a", "us-east-1b", "us-east-1c"]
+
+# NAT Gateway Configuration (for private subnet internet access)
+enable_nat_gateway  = false  # Set to true if you need internet access from private subnets
+single_nat_gateway  = true   # Set to false to create one NAT gateway per AZ (higher availability but more cost)
+
+# VPN Gateway Configuration
+enable_vpn_gateway = false   # Set to true if you need VPN connectivity
+
+# DNS Configuration
+enable_dns_hostnames = true
+enable_dns_support   = true
+
+# Public Subnet Configuration
+map_public_ip_on_launch = true
+
+# =============================================================================
+# EC2 CONFIGURATION
+# =============================================================================
+
+# E-commerce Frontend Server
+create_ecommerce_server   = true
+ecommerce_instance_type   = "t2.large"
+ecommerce_ami_id         = "ami-0360c520857e3138f"  # Ubuntu 24.04 LTS
+ecommerce_volume_size    = 30
+key_pair_name            = "project"
+ecommerce_subnet_type    = "public"  # or "private"
+enable_detailed_monitoring = false
+
+# Security Configuration
+allowed_ssh_cidrs = [
+  "0.0.0.0/0"  # CHANGE THIS to your office/home IP for better security
+  # "203.0.113.0/24",  # Example: Your office IP range
+  # "198.51.100.0/24"  # Example: Your home IP range
+]
+
+# =============================================================================
+# ENVIRONMENT-SPECIFIC EXAMPLES
+# =============================================================================
+
+# Development Environment
+# aws_region              = "us-east-1"
+# environment             = "dev"
+# vpc_cidr                = "10.0.0.0/16"
+# enable_nat_gateway      = false
+# create_ecommerce_server = true
+# ecommerce_instance_type = "t2.large"
+# ecommerce_subnet_type   = "public"
+
+# Staging Environment
+# aws_region              = "us-west-2"
+# environment             = "staging"
+# vpc_cidr                = "10.1.0.0/16"
+# enable_nat_gateway      = true
+# single_nat_gateway      = true
+# create_ecommerce_server = true
+# ecommerce_instance_type = "t2.large"
+# ecommerce_subnet_type   = "private"
+
+# Production Environment
+# aws_region              = "us-west-2"
+# environment             = "prod"
+# vpc_cidr                = "10.2.0.0/16"
+# enable_nat_gateway      = true
+# single_nat_gateway      = false
+# enable_vpn_gateway      = true
+# create_ecommerce_server = true
+# ecommerce_instance_type = "t2.large"
+# ecommerce_subnet_type   = "private"
+# enable_detailed_monitoring = true
