@@ -1,6 +1,6 @@
 # AWS Infrastructure with Terraform - Modular Structure
 
-This repository contains Terraform configuration for AWS infrastructure organized in a modular structure following best practices, including a fully configured e-commerce frontend server.
+This repository defines AWS networking, security groups and an optional Ubuntu EC2 frontend host. Terraform files are grouped by resource type, and a bootstrap script installs development tooling. Application deployment is a separate step.
 
 ## 👨‍💻 **Author**
 
@@ -23,7 +23,11 @@ This repository contains Terraform configuration for AWS infrastructure organize
 ├── vpc.tf                  # VPC and networking resources
 ├── security-groups.tf      # Security group definitions
 ├── ec2.tf                  # EC2 instances and related resources
-├── user-data.sh            # User data script for EC2 initialization
+├── user-data.sh            # EC2 bootstrap template
+├── scripts/
+│   └── full-install.sh     # Software installer downloaded by the bootstrap
+├── QUICK_START.md         # Setup and deployment steps
+├── VALIDATION_CHECKLIST.md # Static checks and runtime verification
 ├── outputs.tf              # Output value definitions
 ├── terraform.tfvars.example # Example variable values
 └── README.md               # This file
@@ -79,11 +83,10 @@ chmod 400 ~/.ssh/project.pem
 
 ### Deployment Steps
 
-1. **Clone and prepare**:
+1. **Clone the repository**:
    ```bash
-   mkdir terraform-ecommerce-infrastructure
+   git clone https://github.com/Tuhinzman/terraform-ecommerce-infrastructure.git
    cd terraform-ecommerce-infrastructure
-   # Copy all the files from the artifacts above
    ```
 
 2. **Configure variables**:
@@ -91,10 +94,12 @@ chmod 400 ~/.ssh/project.pem
    cp terraform.tfvars.example terraform.tfvars
    # Edit terraform.tfvars with your specific values
    ```
+   Set your target account, region, existing EC2 key pair, region-appropriate Ubuntu AMI and allowed SSH CIDRs. The example file contains values from the original lab; do not assume they match your account.
 
-3. **Initialize Terraform**:
+3. **Initialize and validate Terraform**:
    ```bash
    terraform init
+   terraform validate
    ```
 
 4. **Plan deployment**:
@@ -327,28 +332,21 @@ ls -la /tmp/user-data-completed
 sudo cat /var/lib/cloud/instance/user-data.txt
 ```
 
-#### Manual Installation (if needed)
-```bash
-# Download and run manual installation script
-curl -o manual-install.sh https://raw.githubusercontent.com/YOUR_USERNAME/terraform-ecommerce-infrastructure/main/scripts/manual-install.sh
-chmod +x manual-install.sh
-./manual-install.sh
-```
+#### Bootstrap and installer source
 
-### Testing User-Data Script
+`ec2.tf` renders [user-data.sh](user-data.sh), which downloads [scripts/full-install.sh](scripts/full-install.sh). Inspect these files alongside the instance logs when diagnosing setup. The full installer changes packages and services; it is installation code, not a validation test.
 
-Before deploying, you can test the user-data script:
+### Local Syntax Checks
+
+Run these commands from the repository root:
 
 ```bash
-# Run the test script
-./test-user-data.sh
-
-# Check for syntax errors
+terraform fmt -check
 bash -n user-data.sh
-
-# Validate template variables
-grep -n '\${' user-data.sh
+bash -n scripts/full-install.sh
 ```
+
+The shell checks parse syntax without executing either script. They do not render the Terraform template or verify an EC2 installation. Review the `project_name`, `environment` and `terraform_version` template inputs in `ec2.tf`, then follow [VALIDATION_CHECKLIST.md](VALIDATION_CHECKLIST.md).
 
 ### Common Issues
 
@@ -356,9 +354,9 @@ grep -n '\${' user-data.sh
    - Ensure `${project_name}`, `${environment}`, `${terraform_version}` are properly used
    - Check `ec2.tf` passes all required variables to `templatefile()`
 
-2. **Bash Variable Escaping**
-   - Use `$` for bash variables in template: `$(whoami)` instead of `$(whoami)`
-   - Use here-documents with unique EOF markers
+2. **Installer Downloads**
+   - Check `/var/log/user-data.log` for download and installation errors.
+   - Confirm the bootstrap URL points to the intended revision of `scripts/full-install.sh`.
 
 3. **Repository Configuration**
    - APT repository URLs must be properly formatted
@@ -482,7 +480,7 @@ After deploying the infrastructure, you can:
 
 ---
 
-*This project demonstrates production-ready Terraform practices for AWS infrastructure. Star ⭐ the repo if you found it helpful!*
+*This repository provides Terraform configuration for AWS networking and an EC2 frontend host. Validate it in your target environment before use.*
 
 ## 📚 Additional Resources
 

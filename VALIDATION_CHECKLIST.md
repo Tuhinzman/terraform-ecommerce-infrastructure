@@ -1,98 +1,48 @@
-# ✅ Pre-Commit Validation Checklist
+# Validation Checklist
 
-Before pushing your updates to GitHub, please verify:
+Use this checklist when changing the configuration. It is a list of checks to perform, not a record of a successful deployment.
 
-## 🔧 **Code Quality Checks**
+## Local files and syntax
 
-- [ ] **Bash Syntax**: `bash -n user-data.sh` passes without errors
-- [ ] **Template Variables**: All `${variable_name}` references are properly defined in `ec2.tf`
-- [ ] **Bash Escaping**: All bash variables use `$$` syntax (e.g., `$$(whoami)`)
-- [ ] **File Permissions**: `chmod +x test-user-data.sh` if needed
+- [ ] Review changes to the Terraform configuration, `user-data.sh` and `scripts/full-install.sh`.
+- [ ] Confirm that referenced files and script paths exist.
+- [ ] Check the bootstrap download URL and the `project_name`, `environment` and `terraform_version` inputs supplied in `ec2.tf`.
+- [ ] Keep credentials, private keys and local `terraform.tfvars` values out of commits.
 
-## 🧪 **Testing**
-
-- [ ] **Run Test Script**: `./test-user-data.sh` passes all checks
-- [ ] **Terraform Validation**: 
-  ```bash
-  terraform fmt
-  terraform validate
-  terraform plan
-  ```
-- [ ] **Template Rendering**: No syntax errors when Terraform processes templates
-
-## 📋 **File Updates**
-
-- [ ] **user-data.sh**: Updated with fixed syntax and error handling
-- [ ] **ec2.tf**: Properly passes template variables to user-data.sh
-- [ ] **README.md**: Includes troubleshooting and user-data documentation
-- [ ] **test-user-data.sh**: Added for future validation (optional)
-- [ ] **.gitignore**: Still protecting sensitive files
-
-## 🔒 **Security Checks**
-
-- [ ] **No Secrets**: No passwords, keys, or sensitive data in any files
-- [ ] **terraform.tfvars**: Excluded by .gitignore (never commit this)
-- [ ] **SSH Keys**: No .pem or .key files in repository
-
-## 📝 **Documentation**
-
-- [ ] **README.md**: Updated with new features and troubleshooting
-- [ ] **Commit Message**: Clear description of fixes and improvements
-- [ ] **Version Control**: All changes properly tracked
-
-## 🚀 **Deployment Ready**
-
-- [ ] **Manual Testing**: Successfully tested manual installation on current instance
-- [ ] **Template Variables**: Verified all variables are passed correctly
-- [ ] **Error Handling**: Script includes proper logging and error checking
-- [ ] **Recovery Plan**: Manual installation script available as backup
-
-## 📊 **Final Verification Commands**
+From the repository root:
 
 ```bash
-# Check all files are ready
-git status
+terraform fmt -check
+bash -n user-data.sh
+bash -n scripts/full-install.sh
+```
 
-# Validate Terraform configuration
-terraform fmt
+`bash -n` parses the scripts without executing them. It does not validate rendered Terraform templates, network downloads, package installation or an EC2 boot.
+
+## Terraform configuration
+
+- [ ] Copy [terraform.tfvars.example](terraform.tfvars.example) to `terraform.tfvars` and review the target account, Region, key pair, AMI and SSH CIDRs.
+- [ ] Initialize the configuration and validate it before planning a deployment.
+- [ ] Review the plan for the intended resources and costs.
+
+```bash
+terraform init
 terraform validate
-
-# Test user-data script
-./test-user-data.sh
-
-# Review changes before commit
-git diff
-
-# Stage changes
-git add .
-
-# Commit with descriptive message
-git commit -m "fix: resolve user-data script execution issues and improve reliability"
-
-# Push to GitHub
-git push origin main
+terraform plan
 ```
 
-## 🎯 **Success Criteria**
+These commands are deployment-preparation steps. A plan uses the configured AWS credentials and is separate from the local syntax checks above.
 
-After deployment with the fixed user-data script, the following should work on a fresh EC2 instance:
+## Runtime verification after deployment
 
-```bash
-# All tools should be installed
-docker --version
-terraform version
-kubectl version --client
-node --version
-aws --version
-helm version
+- [ ] Inspect `/var/log/user-data.log` on the target Ubuntu host for bootstrap and installation errors.
+- [ ] Verify the required tools with the version commands in [QUICK_START.md](QUICK_START.md).
+- [ ] Check the application separately after deploying its own source and configuration.
+- [ ] Record the commands and results used to verify the deployment; do not treat a completion marker or an unchecked list as evidence of success.
 
-# User should see custom welcome message
-cat /etc/motd
+## Documentation review
 
-# Logs should show successful completion
-sudo tail /var/log/user-data.log
-```
-
----
-
-**✅ Check each item above before proceeding with your Git commit and push!**
+- [ ] Clone commands use the actual repository URL and directory.
+- [ ] Examples match the files and outputs in this repository.
+- [ ] Installer commands are described as installation steps, not tests.
+- [ ] Setup or runtime claims match the validation actually performed.

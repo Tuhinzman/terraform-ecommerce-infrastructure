@@ -16,7 +16,7 @@ apt-get install -y curl wget
 # Download and execute the full installation script
 echo "$(date): Downloading full installation script..."
 cd /tmp
-curl -o full-install.sh https://raw.githubusercontent.com/YOUR_USERNAME/terraform-ecommerce-infrastructure/main/scripts/full-install.sh
+curl -o full-install.sh https://raw.githubusercontent.com/Tuhinzman/terraform-ecommerce-infrastructure/main/scripts/full-install.sh
 
 if [ $? -eq 0 ]; then
     echo "$(date): Running full installation script..."
